@@ -5,10 +5,6 @@ var fs = require('fs');
 var c = new cats();
 request = require('request');
 
-
-// preload();
-
-
   console.log('Preload iniciado');
   var download = function (uri, filename, callback) {
     request.head(uri, function (err, res, body) {
@@ -222,9 +218,6 @@ setTimeout(function () {
     }
   
   }
-
-
-  
 
 }, 3000);
 
