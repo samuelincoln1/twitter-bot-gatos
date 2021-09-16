@@ -5,23 +5,23 @@ var fs = require('fs');
 var c = new cats();
 request = require('request');
 
-  console.log('Preload iniciado');
-  var download = function (uri, filename, callback) {
-    request.head(uri, function (err, res, body) {
-      request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-      if (err) {
-        console.log('Deu algum erro no codigo de download da imagem: ' + err);
-      }
-    });
-  };
-
-  c.get().then((cat) => {
-    console.log('Get cat iniciado');
-    var url = cat.images.image.url;
-    download(url, 'gato.jpg', function () {
-      console.log('preload finalizado com sucesso');
-    });
+console.log('Preload iniciado');
+var download = function (uri, filename, callback) {
+  request.head(uri, function (err, res, body) {
+    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+    if (err) {
+      console.log('Deu algum erro no codigo de download da imagem: ' + err);
+    }
   });
+};
+
+c.get().then((cat) => {
+  console.log('Get cat iniciado');
+  var url = cat.images.image.url;
+  download(url, 'gato.jpg', function () {
+    console.log('preload finalizado com sucesso');
+  });
+});
 
   
 setTimeout(function () {
