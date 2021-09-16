@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Samuel Gomes",
   "license": "ISC",
   "dependencies": {
     "cats-js": "^1.0.2",
