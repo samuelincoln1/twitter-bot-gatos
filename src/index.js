@@ -23,13 +23,13 @@ c.get().then((cat) => {
   });
 });
 
-  
+
 setTimeout(function () {
 
 
   var Twit = require('twit');
   require("dotenv").config();
-  
+
   var Bot = new Twit({
     consumer_key: process.env.API_KEY,
     consumer_secret: process.env.API_SECRET_KEY,
@@ -38,10 +38,10 @@ setTimeout(function () {
     timeout_ms: 60 * 1000,
     strictSSL: true,
   });
-  
+
   const postarFotoIntervalado = () => {
     console.log('Postando foto diária');
-  
+
     var download = function (uri, filename, callback) {
       request.head(uri, function (err, res, body) {
         request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
@@ -50,29 +50,29 @@ setTimeout(function () {
         }
       });
     };
-  
+
     c.get().then((cat) => {
       var url = cat.images.image.url;
       download(url, 'gato.jpg', function () {
         console.log('dowload feito com sucesso');
       });
     });
-  
+
     var b64content = fs.readFileSync('./gato.jpg', { encoding: 'base64' })
-  
-  
+
+
     var media = {
       media_data: b64content,
     }
-  
+
     Bot.post('media/upload', media, function (error, data, response) {
-  
+
       var mediaIdStr = data.media_id_string;
-  
+
       var meta_params = {
         media_id: mediaIdStr
       }
-  
+
       Bot.post('media/metadata/create', meta_params, function (err, data, response) {
         if (err) {
           console.log('Algo deu errado: ' + err);
@@ -81,7 +81,7 @@ setTimeout(function () {
             status: 'Foto do dia 😺',
             media_ids: [mediaIdStr],
           }
-  
+
           Bot.post('statuses/update', params, function (err, data, response) {
             if (err) {
               console.log('Algo deu errado ao tentar postar o tweet: ' + err);
@@ -91,29 +91,23 @@ setTimeout(function () {
           });
         }
       });
-  
+
     });
-  
+
   }
-  
-  
-  
-  
-  
+
   console.log('Procurando tweets...');
-  
-  
+
   postarFotoIntervalado();
   setInterval(postarFotoIntervalado, 1000 * 60 * 60 * 24);
-  
+
   var stream = Bot.stream('statuses/filter', { track: '@fotodegatinho gato' });
-  
-  
+
+
   stream.on('tweet', tweet);
-  
-  
+
   function tweet(tweet) {
-  
+
     var download = function (uri, filename, callback) {
       request.head(uri, function (err, res, body) {
         request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
@@ -122,37 +116,37 @@ setTimeout(function () {
         }
       });
     };
-  
+
     c.get().then((cat) => {
       var url = cat.images.image.url;
       download(url, 'gato.jpg', function () {
         console.log('dowload feito com sucesso');
       });
     });
-  
+
     var text = tweet.text;
     var from = tweet.user.screen_name;
-  
+
     console.log('@' + from + ' enviou o tweet: ' + text);
-  
+
     if (tweet.in_reply_to_status_id_str === null || tweet.in_reply_to_user_id_str === '1435730477676118019' || text.includes('@fotodegatinho gato')) {
-  
+
       var b64content = fs.readFileSync('./gato.jpg', { encoding: 'base64' })
-  
+
       function tweetIt(id) {
-  
+
         var media = {
           media_data: b64content,
         }
-  
+
         Bot.post('media/upload', media, function (error, data, response) {
-  
+
           var mediaIdStr = data.media_id_string;
-  
+
           var meta_params = {
             media_id: mediaIdStr
           }
-  
+
           Bot.post('media/metadata/create', meta_params, function (err, data, response) {
             if (err) {
               console.log('Algo deu errado no metadata: ' + err);
@@ -163,7 +157,7 @@ setTimeout(function () {
                 in_reply_to_status_id: id,
                 auto_populate_reply_metadata: true,
               }
-  
+
               Bot.post('statuses/update', params, function (err, data, response) {
                 if (err) {
                   console.log('Algo deu errado ao tentar postar o tweet: ' + err);
@@ -171,23 +165,23 @@ setTimeout(function () {
               });
             }
           });
-  
+
         });
       }
-  
+
       function tweetIt(id) {
         var media = {
           media_data: b64content,
         }
-  
+
         Bot.post('media/upload', media, function (error, data, response) {
-  
+
           var mediaIdStr = data.media_id_string;
-  
+
           var meta_params = {
             media_id: mediaIdStr
           }
-  
+
           Bot.post('media/metadata/create', meta_params, function (err, data, response) {
             if (err) {
               console.log('Algo deu errado: ' + err);
@@ -198,7 +192,7 @@ setTimeout(function () {
                 in_reply_to_status_id: id,
                 auto_populate_reply_metadata: true,
               }
-  
+
               Bot.post('statuses/update', params, function (err, data, response) {
                 if (err) {
                   console.log('Algo deu errado ao tentar postar o tweet: ' + err);
@@ -208,15 +202,15 @@ setTimeout(function () {
               });
             }
           });
-  
+
         });
-  
+
       }
-  
+
       tweetIt(tweet.id_str);
-  
+
     }
-  
+
   }
 
 }, 3000);
