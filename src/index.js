@@ -21,6 +21,9 @@ request = require('request');
 
 console.log('Procurando tweets...');
 
+
+setInterval(postarFotoIntervalado, 1000*60*60*24);
+
 var stream = Bot.stream('statuses/filter', { track: '@fotodegatinho gato' });
 
 
@@ -129,6 +132,62 @@ function tweet(tweet) {
     tweetIt(tweet.id_str);
 
   }
+
+}
+
+function postarFotoIntervalado () {
+  
+  var download = function (uri, filename, callback) {
+    request.head(uri, function (err, res, body) {
+      request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+      if (err) {
+        console.log('Deu algum erro no codigo de download da imagem: ' + err);
+      }
+    });
+  };
+
+  c.get().then((cat) => {
+    var url = cat.images.image.url;
+    download(url, 'gato.jpg', function () {
+      console.log('dowload feito com sucesso');
+    });
+  });
+
+  var b64content = fs.readFileSync('./gato.jpg', { encoding: 'base64' })
+
+
+  var media = {
+    media_data: b64content,
+  }
+
+  Bot.post('media/upload', media, function (error, data, response) {
+
+    var mediaIdStr = data.media_id_string;
+
+    var meta_params = {
+      media_id: mediaIdStr
+    }
+
+    Bot.post('media/metadata/create', meta_params, function (err, data, response) {
+      if (err) {
+        console.log('Algo deu errado: ' + err);
+      } else {
+        var params = {
+          status: 'Foto do dia 😺',
+          media_ids: [mediaIdStr],
+        }
+
+        Bot.post('statuses/update', params, function (err, data, response) {
+          if (err) {
+            console.log('Algo deu errado ao tentar postar o tweet: ' + err);
+          }
+        });
+      }
+    });
+
+  });
+
+
 
 }
 
