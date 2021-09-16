@@ -50,7 +50,7 @@ function tweet(tweet) {
 
   console.log('@' + from + ' enviou o tweet: ' + text);
 
-  if (tweet.in_reply_to_status_id_str === null || tweet.in_reply_to_user_id_str === '1435730477676118019') {
+  if (tweet.in_reply_to_status_id_str === null || tweet.in_reply_to_user_id_str === '1435730477676118019'|| text.includes('@fotodegatinho gato')) {
 
     var b64content = fs.readFileSync('./gato.jpg', { encoding: 'base64' })
 
@@ -131,4 +131,5 @@ function tweet(tweet) {
   }
 
 }
+
 
