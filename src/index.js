@@ -55,6 +55,7 @@ setTimeout(function () {
       var url = cat.images.image.url;
       download(url, 'gato.jpg', function () {
         console.log('dowload feito com sucesso');
+        console.log('Foto postada com sucesso');
       });
     });
 
@@ -78,7 +79,7 @@ setTimeout(function () {
           console.log('Algo deu errado: ' + err);
         } else {
           var params = {
-            status: 'Foto do dia 😺',
+            status: '',
             media_ids: [mediaIdStr],
           }
 
@@ -86,7 +87,7 @@ setTimeout(function () {
             if (err) {
               console.log('Algo deu errado ao tentar postar o tweet: ' + err);
             } else {
-              console.log('Foto postada com sucesso');
+              // console.log('Foto postada com sucesso');
             }
           });
         }
@@ -98,8 +99,8 @@ setTimeout(function () {
 
   console.log('Procurando tweets...');
 
-  postarFotoIntervalado();
-  setInterval(postarFotoIntervalado, 1000 * 60 * 60 * 24);
+  // postarFotoIntervalado();
+  setInterval(postarFotoIntervalado, 1000 * 60 * 60 * 12);
 
   var stream = Bot.stream('statuses/filter', { track: '@fotodegatinho gato' });
 
@@ -121,6 +122,7 @@ setTimeout(function () {
       var url = cat.images.image.url;
       download(url, 'gato.jpg', function () {
         console.log('dowload feito com sucesso');
+        // console.log('Foto postada com sucesso');
       });
     });
 
@@ -130,6 +132,7 @@ setTimeout(function () {
     console.log('@' + from + ' enviou o tweet: ' + text);
 
     if (tweet.in_reply_to_status_id_str === null || tweet.in_reply_to_user_id_str === '1435730477676118019' || text.includes('@fotodegatinho gato')) {
+      console.log('Passou na condição');
 
       var b64content = fs.readFileSync('./gato.jpg', { encoding: 'base64' })
 
@@ -161,50 +164,14 @@ setTimeout(function () {
               Bot.post('statuses/update', params, function (err, data, response) {
                 if (err) {
                   console.log('Algo deu errado ao tentar postar o tweet: ' + err);
-                }
-              });
-            }
-          });
-
-        });
-      }
-
-      function tweetIt(id) {
-        var media = {
-          media_data: b64content,
-        }
-
-        Bot.post('media/upload', media, function (error, data, response) {
-
-          var mediaIdStr = data.media_id_string;
-
-          var meta_params = {
-            media_id: mediaIdStr
-          }
-
-          Bot.post('media/metadata/create', meta_params, function (err, data, response) {
-            if (err) {
-              console.log('Algo deu errado: ' + err);
-            } else {
-              var params = {
-                status: '',
-                media_ids: [mediaIdStr],
-                in_reply_to_status_id: id,
-                auto_populate_reply_metadata: true,
-              }
-
-              Bot.post('statuses/update', params, function (err, data, response) {
-                if (err) {
-                  console.log('Algo deu errado ao tentar postar o tweet: ' + err);
                 } else {
-                  console.log('Foto postada com sucesso');
+                  console.log('tweet enviado com sucesso');
                 }
               });
             }
           });
 
         });
-
       }
 
       tweetIt(tweet.id_str);
@@ -214,8 +181,4 @@ setTimeout(function () {
   }
 
 }, 3000);
-
-
-
-
 
